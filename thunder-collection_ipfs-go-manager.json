@@ -1,0 +1,64 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "ipfs-go-manager",
+    "collectionId": "10bebb70-d674-48aa-8321-37760f38e0e0",
+    "dateExported": "2024-05-31T09:06:22.220Z",
+    "version": "1.2",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "8996ded9-8905-4d2c-96e9-5e544f16c824",
+            "colId": "10bebb70-d674-48aa-8321-37760f38e0e0",
+            "containerId": "",
+            "name": "http://localhost:3000/",
+            "url": "http://localhost:3000/",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2024-05-29T10:41:59.904Z",
+            "modified": "2024-05-29T10:41:59.904Z",
+            "headers": []
+        },
+        {
+            "_id": "c117e2e4-298a-427c-8a94-4a637be0d606",
+            "colId": "10bebb70-d674-48aa-8321-37760f38e0e0",
+            "containerId": "",
+            "name": "http://localhost:3000/pincid/QmNRT1pHX4JLZgZxNEx8VH6HVLh3jsmcGm7vNEb4i6CwGm",
+            "url": "http://localhost:3000/pincid/QmNRT1pHX4JLZgZxNEx8VH6HVLh3jsmcGm7vNEb4i6CwGm",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2024-05-29T10:59:12.730Z",
+            "modified": "2024-05-29T10:59:12.730Z",
+            "headers": []
+        },
+        {
+            "_id": "da34d6de-6337-49d3-a3bd-88d0e27ab27e",
+            "colId": "10bebb70-d674-48aa-8321-37760f38e0e0",
+            "containerId": "",
+            "name": "http://localhost:3000/upload",
+            "url": "http://localhost:3000/upload",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-05-29T12:36:42.891Z",
+            "modified": "2024-05-29T12:36:42.891Z",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "multipart/form-data",
+                    "isDisabled": true
+                }
+            ],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [],
+                "files": [
+                    {
+                        "name": "file",
+                        "value": "/home/wsl/redirekt_to_twitter.html"
+                    }
+                ]
+            }
+        }
+    ],
+    "ref": "XHzyDZnlm0-g8-9MJeaWuLvLXy2tb4uhP6cKn40MUw9OH4TCN356vxCJtxvUGJdl_ZRqGrX-WstZbw8H1wtpWw"
+}

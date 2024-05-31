@@ -1,5 +1,5 @@
 build:
-	@go build -o bin/backend main.go
+	@go build -o bin/backend cmd/server/main.go
 
 test:
 	@go test -v ./...
