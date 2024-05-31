@@ -10,6 +10,7 @@ import (
 type Config struct {
 	HostAddress     string
 	IPFSHostAddress string
+	AdminApiKey     string
 }
 
 var Env = initConfig()
@@ -20,6 +21,7 @@ func initConfig() Config {
 	return Config{
 		HostAddress:     fmt.Sprintf("%s:%s", getEnv("PUBLIC_HOST", "127.0.0.1"), getEnv("PORT", "3000")),
 		IPFSHostAddress: getEnv("IPFS_API_ADDRESS", "/ip4/127.0.0.1/tcp"),
+		AdminApiKey:     getEnv("ADMIN_API_KEY", "admin-api-key"),
 	}
 }
 
