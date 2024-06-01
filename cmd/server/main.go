@@ -11,10 +11,24 @@ import (
 	"github.com/CreedsCode/ipfs-go-manager/internal/ipfs"
 	"github.com/CreedsCode/ipfs-go-manager/internal/web3"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func main() {
 	app := fiber.New()
+	app.Use(func(c *fiber.Ctx) error {
+		if c.Method() == fiber.MethodOptions {
+			c.Set("Access-Control-Allow-Headers", "*")
+			c.Set("Access-Control-Allow-Origin", "*")
+			c.Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+			return c.SendStatus(fiber.StatusOK)
+		}
+		return c.Next()
+	})
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:3000",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
 
 	storage := auth.NewInMemoryStorage()
 	storage.CreateUser(config.Env.PrivateKey, 1000, true)

@@ -27,8 +27,8 @@ services:
       - "8080:8080"
     volumes:
       - ./ipfs-data:/data/ipfs
-      - ./entrypoint.sh:/entrypoint.sh
-    entrypoint: /entrypoint.sh
+    #   - ./entrypoint.sh:/entrypoint.sh
+    # entrypoint: /entrypoint.sh
 
 volumes:  
   mysql-data:

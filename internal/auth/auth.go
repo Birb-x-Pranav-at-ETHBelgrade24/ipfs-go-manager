@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/CreedsCode/ipfs-go-manager/internal/web3"
@@ -31,7 +32,11 @@ func (m *AuthMiddleware) Middleware(c *fiber.Ctx) error {
 
 	user, err := m.storage.GetUser(apiKey)
 	if err != nil {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": err.Error()})
+		m.storage.CreateUser(apiKey, 100, false)
+		user, err = m.storage.GetUser(apiKey)
+		if err != nil {
+			return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": err.Error()})
+		}
 	}
 
 	if user.Quota <= 0 {
@@ -75,6 +80,7 @@ func (m *AuthMiddleware) Storage() Storage {
 
 func getAPIKey(c *fiber.Ctx) string {
 	apiKey := c.Get("Authorization")
+	fmt.Printf("api:", apiKey)
 	if len(apiKey) > 7 && apiKey[:7] == "Bearer " {
 		return apiKey[7:]
 	}
