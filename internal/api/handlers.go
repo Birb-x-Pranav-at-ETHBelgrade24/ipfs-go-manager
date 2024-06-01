@@ -18,7 +18,7 @@ func pinCIDHandler(c *fiber.Ctx, node *rpc.HttpApi) error {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": err.Error()})
 	}
 
-	return c.Status(200).JSON(fiber.Map{"status": "success"})
+	return c.Status(200).JSON(fiber.Map{"status": "success", "tx": c.Locals("tx").(string)})
 }
 
 func uploadFileHandler(c *fiber.Ctx, node *rpc.HttpApi) error {
@@ -43,5 +43,5 @@ func uploadFileHandler(c *fiber.Ctx, node *rpc.HttpApi) error {
 
 	fmt.Printf("Added file to peer with CID %s\n", cidFile.String())
 
-	return c.Status(200).JSON(fiber.Map{"status": "success", "cid": cidFile.String()})
+	return c.Status(200).JSON(fiber.Map{"status": "success", "cid": cidFile.String(), "tx": c.Locals("tx").(string)})
 }
