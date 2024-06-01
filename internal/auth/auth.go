@@ -4,20 +4,23 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/CreedsCode/ipfs-go-manager/internal/web3"
 	"github.com/gofiber/fiber/v2"
 )
 
 var (
-	ErrInvalidAPIKey = errors.New("invalid API key")
-	ErrUnauthorized  = errors.New("unauthorized")
+	ErrInvalidAPIKey  = errors.New("invalid API key")
+	ErrUnauthorized   = errors.New("unauthorized")
+	ErrDeductingQuota = errors.New("could not deduct quota")
 )
 
 type AuthMiddleware struct {
-	storage Storage
+	storage    Storage
+	Web3Client *web3.Web3Client
 }
 
-func NewAuthMiddleware(storage Storage) *AuthMiddleware {
-	return &AuthMiddleware{storage: storage}
+func NewAuthMiddleware(storage Storage, web3Client *web3.Web3Client) *AuthMiddleware {
+	return &AuthMiddleware{storage: storage, Web3Client: web3Client}
 }
 
 func (m *AuthMiddleware) Middleware(c *fiber.Ctx) error {
@@ -38,7 +41,12 @@ func (m *AuthMiddleware) Middleware(c *fiber.Ctx) error {
 	user.Quota--
 	m.storage.UpdateQuota(apiKey, user.Quota)
 
+	tx, err := m.Web3Client.DeductQuota("0x538522b81a333340a5E1605b7298E7d765781412", 1)
+	if err != nil {
+		return c.Status(http.StatusPaymentRequired).JSON(fiber.Map{"status": "error", "message": ErrDeductingQuota.Error()})
+	}
 	c.Locals("user", user)
+	c.Locals("tx", tx)
 	return c.Next()
 }
 

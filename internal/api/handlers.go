@@ -11,6 +11,8 @@ import (
 )
 
 func pinCIDHandler(c *fiber.Ctx, node *rpc.HttpApi) error {
+	tx := c.Locals("tx").(string)
+
 	cid := c.Params("cid")
 	err := ipfs.PinCID(cid, node)
 	if err != nil {
@@ -18,10 +20,12 @@ func pinCIDHandler(c *fiber.Ctx, node *rpc.HttpApi) error {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": err.Error()})
 	}
 
-	return c.Status(200).JSON(fiber.Map{"status": "success"})
+	return c.Status(200).JSON(fiber.Map{"status": "success", "tx": tx})
 }
 
 func uploadFileHandler(c *fiber.Ctx, node *rpc.HttpApi) error {
+	tx := c.Locals("tx").(string)
+
 	file, err := c.FormFile("file")
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": err.Error()})
@@ -38,7 +42,7 @@ func uploadFileHandler(c *fiber.Ctx, node *rpc.HttpApi) error {
 	ctx := context.Background()
 	cidFile, err := node.Unixfs().Add(ctx, fileReader)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": err.Error(), "tx": tx})
 	}
 
 	fmt.Printf("Added file to peer with CID %s\n", cidFile.String())
