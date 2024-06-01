@@ -54,7 +54,8 @@ func main() {
 	}
 
 	api.SetupRoutes(app, node, authMiddleWare)
-	api.SetupAdminRoutes(app, authMiddleWare)
+	api.NonceRoutes(app, node, authMiddleWare)
+	// api.SetupAdminRoutes(app, authMiddleWare)
 
 	log.Fatal(app.Listen(config.Env.HostAddress))
 }

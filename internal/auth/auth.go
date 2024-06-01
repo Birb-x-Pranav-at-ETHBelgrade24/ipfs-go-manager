@@ -1,11 +1,15 @@
 package auth
 
 import (
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/CreedsCode/ipfs-go-manager/internal/web3"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -53,30 +57,64 @@ func (m *AuthMiddleware) Middleware(c *fiber.Ctx) error {
 	c.Locals("user", user)
 	c.Locals("tx", tx)
 	return c.Next()
+
 }
 
-func (m *AuthMiddleware) AdminMiddleware(c *fiber.Ctx) error {
-	apiKey := getAPIKey(c)
-	if apiKey == "" {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": ErrInvalidAPIKey.Error()})
+func (am *AuthMiddleware) verifySignature(message, signature string) (common.Address, error) {
+	if strings.HasPrefix(signature, "0x") {
+		signature = signature[2:]
 	}
 
-	user, err := m.storage.GetUser(apiKey)
+	sig, err := hex.DecodeString(signature)
 	if err != nil {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": err.Error()})
+		return common.Address{}, fmt.Errorf("failed to decode signature: %v", err)
 	}
 
-	if !user.Admin {
-		return c.Status(http.StatusForbidden).JSON(fiber.Map{"status": "error", "message": "admin privileges required"})
+	msgHash := crypto.Keccak256Hash([]byte(message))
+	pubKey, err := crypto.SigToPub(msgHash.Bytes(), sig)
+	if err != nil {
+		return common.Address{}, fmt.Errorf("failed to recover public key from signature: %v", err)
 	}
 
-	c.Locals("user", user)
-	return c.Next()
+	addr := crypto.PubkeyToAddress(*pubKey)
+
+	return addr, nil
 }
 
-func (m *AuthMiddleware) Storage() Storage {
-	return m.storage
-}
+// func (m *AuthMiddleware) deducQuota(userAddr common.Address) (string, error) {
+// 	tx, err := m.Web3Client.Contract.UseQuota(m.Web3Client.Auth, userAddr, big.NewInt(1))
+// 	if err != nil {
+// 		fmt.Println("failed to deduct quota:", userAddr.Hex(), err.Error())
+// 		return "", err
+// 	}
+
+// 	x := tx.Hash().Hex()
+// 	fmt.Printf("Quota deducted for user %s. Transaction hash: %s\n", userAddr.Hex(), x)
+// 	return x, nil
+// }
+
+// func (m *AuthMiddleware) AdminMiddleware(c *fiber.Ctx) error {
+// 	apiKey := getAPIKey(c)
+// 	if apiKey == "" {
+// 		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": ErrInvalidAPIKey.Error()})
+// 	}
+
+// 	user, err := m.storage.GetUser(apiKey)
+// 	if err != nil {
+// 		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": err.Error()})
+// 	}
+
+// 	if !user.Admin {
+// 		return c.Status(http.StatusForbidden).JSON(fiber.Map{"status": "error", "message": "admin privileges required"})
+// 	}
+
+// 	c.Locals("user", user)
+// 	return c.Next()
+// }
+
+// func (m *AuthMiddleware) Storage() Storage {
+// 	return m.storage
+// }
 
 func getAPIKey(c *fiber.Ctx) string {
 	apiKey := c.Get("Authorization")

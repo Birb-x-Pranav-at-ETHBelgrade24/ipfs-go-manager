@@ -47,5 +47,5 @@ func uploadFileHandler(c *fiber.Ctx, node *rpc.HttpApi) error {
 
 	fmt.Printf("Added file to peer with CID %s\n", cidFile.String())
 
-	return c.Status(200).JSON(fiber.Map{"status": "success", "cid": cidFile.String()})
+	return c.Status(200).JSON(fiber.Map{"status": "success", "cid": cidFile.String(), "tx": c.Locals("tx").(string)})
 }
