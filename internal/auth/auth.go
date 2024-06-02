@@ -46,7 +46,7 @@ func (m *AuthMiddleware) Middleware(c *fiber.Ctx) error {
 	user.Quota--
 	m.storage.UpdateQuota(apiKey, user.Quota)
 
-	tx, err := m.Web3Client.DeductQuota("0x538522b81a333340a5E1605b7298E7d765781412", 1)
+	tx, err := m.Web3Client.DeductQuota(apiKey, 1)
 	if err != nil {
 		return c.Status(http.StatusPaymentRequired).JSON(fiber.Map{"status": "error", "message": ErrDeductingQuota.Error()})
 	}
